@@ -35,9 +35,8 @@ nav {
 .main-stage-container {
     width: 100vw;
     height: 100vh;
-    border-bottom: 3px solid #333; /* Толщина и цвет границы */
+    border-bottom: 3px solid #333;
     top: 0px;
-
     position: relative;
 
     margin: 0;
@@ -48,8 +47,7 @@ nav {
     width: 100vw;
     height: 100vh;
     background-color: #000000;
-    transform:         /* Масштаб */
-        skew(-10deg);       /* Наклон */
+    transform: skew(-10deg);
     left: 50%;
     top: 0px;
 
@@ -60,8 +58,8 @@ nav {
 }
 
 .men-img {
-    margin-left: 55%;
-    margin-top: 5%;
+    margin-left: 55vw;
+    margin-top: 15vh;
     position: relative;
     z-index: 20;
 }
@@ -71,7 +69,7 @@ nav {
     width: 120px;
     height: 30px;
     border-radius: 30px;
-    background: #000000;
+    background: black;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -98,8 +96,8 @@ nav {
 
 .greeting {
     position: absolute;
-    top: 40%;
-    left: 300px;
+    top: 35vh;
+    left: 20vw;
 }
 
 .contact-link-element {
@@ -107,9 +105,9 @@ nav {
     align-items: center;
     gap: 8px;
     padding: 10px 20px;
-    background: rgba(255, 255, 255, 0.1);
+    background: #C7C7C7;
     border-radius: 30px;
-    color: white;
+    color: black;
     text-decoration: none;
     transition: all 0.3s ease;
 }
@@ -163,7 +161,6 @@ nav {
     border-right: 4px solid black;
     border-radius: 8px;
 
-  
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
   
     display: block;
@@ -316,7 +313,6 @@ form {
     color: white;
 }
 
-
 .footer {
     margin-top: 50px;
     background: #1A1A1A;
@@ -346,7 +342,7 @@ form {
 .social-icons img {
     width: 24px;
     height: 24px;
-    filter: brightness(0) invert(1); /* Делает иконки белыми */
+    filter: brightness(0) invert(1);
     transition: opacity 0.3s;
 }
 
@@ -361,4 +357,42 @@ form {
 
 .copyright strong {
     font-weight: bold;
+}
+
+
+@media (max-width: 768px) {
+    #handsome {
+        display: none;
+    }
+
+    .big-square {
+        display: none;
+    }
+
+    .men-img {
+        display: none;
+    }
+
+    nav {
+        padding-left: 0;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .header-element {
+        width: 100px;
+        height: 30px;
+    }
+
+    .header-element a {
+        font-size: 12px;
+    }
+
+    .greeting {
+        position: relative;
+        text-align: center;
+        top: 20vh;
+        left: 0;
+    }
 }
