@@ -1,4 +1,4 @@
-// Галерея изображений
+// Переменные галлереи изображений
 const galleryItems = document.querySelectorAll('.gallery-item');
 const popup = document.querySelector('.popup-gallery');
 const popupImg = document.getElementById('popup-img');
@@ -7,7 +7,7 @@ const prevBtn = document.querySelector('.prev-btn');
 const nextBtn = document.querySelector('.next-btn');
 let currentIndex = 0;
 
-// ==================== ФИКСАЦИЯ МЕНЮ ПРИ СКРОЛЛЕ ====================
+/* ------------------ ФИКСАЦИЯ МЕНЮ ПРИ СКРОЛЛЕ ------------------*/
 const header = document.getElementById('header');
 const mainStage = document.getElementById('main-stage');
 
