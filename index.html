@@ -58,20 +58,26 @@
              </div>
             
             <h2>Contact me</h2>
-            <form action="https://github.com/AndreyShirokoryad" method="POST">
-                 <div class="form-group">
-                    <input type="text" placeholder="ENTER YOUR NAME*" required>
+            <form id="contact-form" class="contact-form">
+                <div class="form-group">
+                    <input type="text" id="name" name="name" placeholder="ENTER YOUR NAME*">
+                    <p class="error-message" id="name-error"></p>
                 </div>
                 <div class="form-group">
-                    <input type="email" placeholder="ENTER YOUR EMAIL*" required>
+                    <input type="text" id="email" name="email" placeholder="ENTER YOUR EMAIL*">
+                    <p class="error-message" id="email-error"></p>
                 </div>
                 <div class="form-group">
-                    <input type="tel" placeholder="PHONE NUMBER">
+                    <input type="text" id="phone" name="phone" placeholder="PHONE NUMBER">
+                    <p class="error-message" id="phone-error"></p>
                 </div>
                 <div class="form-group">
-                    <textarea placeholder="YOUR MESSAGE*" required></textarea>
+                    <textarea id="message" name="message" placeholder="YOUR MESSAGE*"></textarea>
+                    <p class="error-message" id="message-error"></p>
                 </div>
-                <button type="submit" class="submit-btn">SUBMIT</button>
+                <button type="submit" class="submit-btn">
+                    <span class="btn-text">SUBMIT</span>
+                </button>
             </form>
         </div>
         </div>
@@ -156,15 +162,22 @@
 
     <div id="portfolio" class="portfolio">
         <h2 class="page-title">PORTFOLIO</h2>
+
+        <div class="portfolio-filter">
+            <button class="filter-btn active" data-filter="all">All works</button>
+            <button class="filter-btn" data-filter="cpp">C++</button>
+            <button class="filter-btn" data-filter="cat">Cat</button>
+        </div>
+
         <div class="gallery-wrapper">
             <div class="gallery-scroll">
                 <div class="gallery">
-                    <img src="images/string.jpg" class="gallery-item" alt="String project">
-                    <img src="images/deque1.jpg" class="gallery-item" alt="Deque project 1">
-                    <img src="images/deque2.jpg" class="gallery-item" alt="Deque project 2">
-                    <img src="images/smart_pointers.jpg" class="gallery-item" alt="Smart Pointers">
-                    <img src="images/list.jpg" class="gallery-item" alt="List project">
-                    <img src="images/cat1.jpg" class="gallery-item" alt="Cat project">
+                    <img src="images/string.jpg" class="gallery-item" alt="String project" data-tags="cpp">
+                    <img src="images/deque1.jpg" class="gallery-item" alt="Deque project 1" data-tags="cpp">
+                    <img src="images/deque2.jpg" class="gallery-item" alt="Deque project 2" data-tags="cpp">
+                    <img src="images/smart_pointers.jpg" class="gallery-item" alt="Smart Pointers" data-tags="cpp">
+                    <img src="images/list.jpg" class="gallery-item" alt="List project" data-tags="cpp">
+                    <img src="images/cat1.jpg" class="gallery-item" alt="Cat project" data-tags="cat">
                 </div>
             </div>
         </div>
