@@ -1,4 +1,4 @@
-// Переменные галлереи изображений
+// Галерея изображений
 const galleryItems = document.querySelectorAll('.gallery-item');
 const popup = document.querySelector('.popup-gallery');
 const popupImg = document.getElementById('popup-img');
@@ -7,13 +7,13 @@ const prevBtn = document.querySelector('.prev-btn');
 const nextBtn = document.querySelector('.next-btn');
 let currentIndex = 0;
 
-/* ------------------ ФИКСАЦИЯ МЕНЮ ПРИ СКРОЛЛЕ ------------------*/
+// ----------------- ФИКСАЦИЯ МЕНЮ ПРИ СКРОЛЛЕ -------------------
 const header = document.getElementById('header');
 const mainStage = document.getElementById('main-stage');
 
 function handleScroll() {
     const mainStageHeight = mainStage.offsetHeight;
-        if (window.scrollY > mainStageHeight * 0.9) {
+    if (window.scrollY > mainStageHeight * 0.9) {
         header.classList.add('scrolled');
     } else {
         header.classList.remove('scrolled');
@@ -134,6 +134,16 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+
+// Закрытие при нажатии на вне попапа
+document.addEventListener('DOMContentLoaded', function() {
+    feedbackPopup.addEventListener('click', function(e) {
+        if (e.target === feedbackPopup) {
+            closeFeedbackPopup();
+        }
+    });
+});
+
 // WELCOME POPUP
 if (!localStorage.getItem('welcomePopupClosed')) {
     setTimeout(() => {
@@ -186,188 +196,162 @@ function updateYearCountdown() {
 setInterval(updateYearCountdown, 1000);
 updateYearCountdown();
 
-
-/*-------------------contact form----------------*/
+/*-------------------contact forms handling----------------*/
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('contact-form');
+    // Основные элементы
+    const mainForm = document.querySelector('#contact .contact-form');
+    const popupForm = document.querySelector('.feedback-popup .contact-form');
     const formSuccess = document.getElementById('form-success');
     
-    if (form) {
-        form.addEventListener('submit', handleFormSubmit);
-        document.getElementById('name').addEventListener('blur', validateName);
-        document.getElementById('email').addEventListener('blur', validateEmail);
-        document.getElementById('phone').addEventListener('blur', validatePhone);
-        document.getElementById('message').addEventListener('blur', validateMessage);
+    // Обработчики для обеих форм
+    [mainForm, popupForm].forEach(form => {
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                handleFormSubmit(e, form);
+            });
+            
+            const inputs = form.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    validateField(input, form);
+                });
+            });
+        }
+    });
+    
+    function validateField(input, form) {
+        const name = input.getAttribute('name');
+        const value = input.value.trim();
+        let isValid = true;
+        let errorMessage = '';
+        
+        switch(name) {
+            case 'name':
+                if (!value) {
+                    errorMessage = 'Name is required';
+                    isValid = false;
+                } else if (!/^[a-zA-Zа-яА-ЯёЁ\s\-]+$/.test(value)) {
+                    errorMessage = 'Only letters, spaces and hyphens are allowed';
+                    isValid = false;
+                }
+                break;
+                
+            case 'email':
+                if (!value) {
+                    errorMessage = 'Email is required';
+                    isValid = false;
+                } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                    errorMessage = 'Please enter a valid email address';
+                    isValid = false;
+                }
+                break;
+                
+            case 'phone':
+                if (value && !/^(\+?\d{1,3}[\s\-]?)?(\(\d{3}\)|\d{3})[\s\-]?\d{3}[\s\-]?\d{2}[\s\-]?\d{2}$/.test(value)) {
+                    errorMessage = 'Please enter a valid phone number';
+                    isValid = false;
+                }
+                break;
+                
+            case 'message':
+                if (!value) {
+                    errorMessage = 'Message is required';
+                    isValid = false;
+                } else if (!/^[a-zA-Zа-яА-ЯёЁ0-9\s\.,!?\-'"\n]+$/.test(value)) {
+                    errorMessage = 'Only English/Russian letters, numbers and basic punctuation are allowed';
+                    isValid = false;
+                } else if (value.length < 10) {
+                    errorMessage = 'Message should be at least 10 characters long';
+                    isValid = false;
+                }
+                break;
+        }
+        
+        const errorElement = input.nextElementSibling || 
+                           input.closest('.form-group').querySelector('.error-message');
+        if (errorElement) {
+            errorElement.textContent = errorMessage;
+            input.closest('.form-group').classList.toggle('invalid', !isValid);
+        }
+        
+        return isValid;
     }
     
-    function handleFormSubmit(e) {
+    function handleFormSubmit(e, form) {
         e.preventDefault();
-        resetErrors();
         
-        const isNameValid = validateName();
-        const isEmailValid = validateEmail();
-        const isPhoneValid = validatePhone();
-        const isMessageValid = validateMessage();
+        // Валидируем все поля
+        const inputs = form.querySelectorAll('input, textarea');
+        let isFormValid = true;
         
-        if (isNameValid && isEmailValid && isPhoneValid && isMessageValid) {
-            const submitBtn = form.querySelector('.submit-btn');
-            const btnText = submitBtn.querySelector('.btn-text');
+        inputs.forEach(input => {
+            const isValid = validateField(input, form);
+            if (!isValid) isFormValid = false;
+        });
+        
+        if (isFormValid) {
+            const submitBtn = form.querySelector('.submit-btn') || 
+                             form.querySelector('button[type="submit"]');
+            const btnText = submitBtn.querySelector('.btn-text') || submitBtn;
             
-            submitBtn.classList.add('sending');
-            submitBtn.disabled = true;
+            if (submitBtn) {
+                submitBtn.classList.add('sending');
+                submitBtn.disabled = true;
+                
+                if (btnText) btnText.textContent = 'SENDING...';
+            }
             
             setTimeout(() => {
-                // В 90% случаев показываем успех, в 10% - ошибку
                 const isSuccess = Math.random() > 0.1;
                 
-                if (isSuccess) {
-                    submitBtn.classList.remove('sending');
-                    submitBtn.classList.add('success');
-                    btnText.textContent = 'SUCCESS!';
-                    
-                    formSuccess.style.display = 'block';
-                    form.reset();
-                    
-                    // Через 2 секунды возвращаем кнопку в исходное состояние
-                    setTimeout(() => {
-                        submitBtn.classList.remove('success');
-                        btnText.textContent = 'SUBMIT';
-                        submitBtn.disabled = false;
-                    }, 2000);
-                } else {
-                    submitBtn.classList.remove('sending');
-                    submitBtn.classList.add('error');
-                    btnText.textContent = 'ERROR! TRY AGAIN';
-                    
-                    setTimeout(() => {
-                        submitBtn.classList.remove('error');
-                        btnText.textContent = 'SUBMIT';
-                        submitBtn.disabled = false;
-                    }, 2000);
+                if (submitBtn) {
+                    if (isSuccess) {
+                        submitBtn.classList.remove('sending');
+                        submitBtn.classList.add('success');
+                        if (btnText) btnText.textContent = 'SUCCESS!';
+                        
+                        if (form === mainForm && formSuccess) {
+                            formSuccess.style.display = 'block';
+                        }
+                        
+                        form.reset();
+                        
+                        setTimeout(() => {
+                            submitBtn.classList.remove('success');
+                            if (btnText) btnText.textContent = 'SUBMIT';
+                            submitBtn.disabled = false;
+                            
+                            if (form === popupForm) {
+                                setTimeout(() => {
+                                    closeFeedbackPopup();
+                                }, 500);
+                            }
+                        }, 2000);
+                    } else {
+                        submitBtn.classList.remove('sending');
+                        submitBtn.classList.add('error');
+                        if (btnText) btnText.textContent = 'ERROR! TRY AGAIN';
+                        
+                        setTimeout(() => {
+                            submitBtn.classList.remove('error');
+                            if (btnText) btnText.textContent = 'SUBMIT';
+                            submitBtn.disabled = false;
+                        }, 2000);
+                    }
                 }
             }, 1500);
         }
     }
-    
-    function validateName() {
-        const input = document.getElementById('name');
-        const error = document.getElementById('name-error');
-        const value = input.value.trim();
-        
-        if (!value) {
-            showError(input, error, 'Name is required');
-            return false;
-        }
-        
-        if (!/^[a-zA-Zа-яА-ЯёЁ\s\-]+$/.test(value)) {
-            showError(input, error, 'Only letters, spaces and hyphens are allowed');
-            return false;
-        }
-        
-        return true;
-    }
-    
-    function validateEmail() {
-        const input = document.getElementById('email');
-        const error = document.getElementById('email-error');
-        const value = input.value.trim();
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        
-        if (!value) {
-            showError(input, error, 'Email is required');
-            return false;
-        }
-        
-        if (!emailRegex.test(value)) {
-            showError(input, error, 'Please enter a valid email address');
-            return false;
-        }
-        
-        return true;
-    }
-    
-    function validatePhone() {
-        const input = document.getElementById('phone');
-        const error = document.getElementById('phone-error');
-        const value = input.value.trim();
-        
-        // Поле телефона необязательное
-        if (!value) return true;
-        
-        const phoneRegex = /^(\+?\d{1,3}[\s\-]?)?(\(\d{3}\)|\d{3})[\s\-]?\d{3}[\s\-]?\d{2}[\s\-]?\d{2}$/;
-        
-        if (!phoneRegex.test(value)) {
-            showError(input, error, 'Please enter a valid phone number');
-            return false;
-        }
-        
-        return true;
-    }
-    
-    function validateMessage() {
-        const input = document.getElementById('message');
-        const error = document.getElementById('message-error');
-        const value = input.value.trim();
-        const messageRegex = /^[a-zA-Zа-яА-ЯёЁ0-9\s\.,!?\-'"\n]+$/;
-        if (!value) {
-            showError(input, error, 'Message is required');
-            return false;
-        }
-        if (!messageRegex.test(value)) {
-            showError(input, error, 'Only English/Russian letters, numbers and basic punctuation are allowed');
-            return false;
-        }
-        if (value.length < 10) {
-            showError(input, error, 'Message should be at least 10 characters long');
-            return false;
-        }
-        return true;
-    }
-    
-    function showError(input, errorElement, message) {
-        const formGroup = input.closest('.form-group');
-        formGroup.classList.add('invalid');
-        errorElement.textContent = message;
-    }
-
-    function resetErrors() {
-        const errorMessages = document.querySelectorAll('.error-message');
-        const formGroups = document.querySelectorAll('.form-group');
-        
-        errorMessages.forEach(el => el.textContent = '');
-        formGroups.forEach(el => el.classList.remove('invalid'));
-        formSuccess.style.display = 'none';
-    }
-
-    function sendFormData() {
-        const formData = {
-            name: document.getElementById('name').value.trim(),
-            email: document.getElementById('email').value.trim(),
-            phone: document.getElementById('phone').value.trim(),
-            message: document.getElementById('message').value.trim()
-        };   
-        showSuccess();
-        form.reset();
-    }
-
-    function showSuccess() {
-        formSuccess.style.display = 'block';
-        setTimeout(() => {
-            formSuccess.style.display = 'none';
-        }, 5000);
-    }
 });
 
-
 /* -----------АНИМАЦИЯ ТЕНИ ----------------- */
-// Переменные для отслеживания движения мыши
 let lastMouseX = 0;
 let lastMouseY = 0;
 let lastTimestamp = 0;
 let speed = 0;
 const button = document.getElementById('open-feedback-btn');
 
-// Функция для вычисления скорости мыши
 function trackMouseSpeed(e) {
   const now = performance.now();
   const timeDiff = now - lastTimestamp;
@@ -395,7 +379,6 @@ function updateButtonShadow() {
   button.style.boxShadow = `0 0 ${shadowIntensity}px ${shadowIntensity/2}px rgba(106, 50, 159, ${0.4 + normalizedSpeed * 0.3})`;
 }
 
-// Замедление тени со временем
 function decayShadow() {
   if (speed > 0.2) {
     updateButtonShadow();
@@ -412,4 +395,28 @@ button.addEventListener('mouseenter', () => {
 button.addEventListener('mouseleave', () => {
   decayShadow();
   speed = 0;
+});
+
+// Фильтрация галереи
+document.addEventListener('DOMContentLoaded', function() {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            const filter = this.getAttribute('data-filter');            
+            
+            galleryItems.forEach(item => {
+                if (filter === 'all') {
+                    item.style.display = 'block';
+                } else {
+                    const tags = item.getAttribute('data-tags');
+                    item.style.display = tags.includes(filter) ? 'block' : 'none';
+                }
+            });
+        });
+    });
 });
